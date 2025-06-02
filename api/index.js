@@ -1,3 +1,4 @@
+// index.js (di root atau folder /api sesuai vercel.json)
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method Not Allowed' });
@@ -16,7 +17,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
-        username,
+        username: username,
         question: message,
         deviceId: 'website'
       })
