@@ -1,36 +1,42 @@
-const express = require('express');
-const app = express();
-const serverless = require('serverless-http');
-
-app.use(express.json());
-
-app.post('/send', async (req, res) => {
-  const { username, question } = req.body;
-
-  if (!username || !question) {
-    return res.status(400).json({ success: false, message: 'Missing username or question' });
+export default async function handler(req, res) {
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
 
-  try {
-    const response = await fetch('https://ngl.link/api/submit', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        username,
-        question,
-        deviceId: 'website'
-      })
-    });
+  const { username, message, count } = req.body;
+  if (!username || !message || !count || count <= 0) {
+    return res.status(400).json({ error: 'Invalid input' });
+  }
 
-    const data = await response.json();
-    if (data.success) {
-      res.json({ success: true });
-    } else {
-      res.status(500).json({ success: false, message: 'NGL error' });
+  let success = 0;
+  let failed = 0;
+
+  for (let i = 0; i < count; i++) {
+    try {
+      await new Promise(resolve => setTimeout(resolve, Math.random() * 1000 + 1000)); // Delay 1–2 detik
+
+      const resNgl = await fetch("https://ngl.link/api/submit", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          username: username,
+          question: message,
+          deviceId: "website"
+        })
+      });
+
+      const data = await resNgl.json();
+      if (data.success) {
+        success++;
+      } else {
+        failed++;
+      }
+    } catch (err) {
+      failed++;
     }
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Fetch failed' });
   }
-});
 
-module.exports = serverless(app);
+  res.status(200).json({ success, failed });
+}
