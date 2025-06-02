@@ -16,7 +16,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/x-www-form-urlencoded'
       },
       body: new URLSearchParams({
-        username: username,
+        username,
         question: message,
         deviceId: 'website'
       })
