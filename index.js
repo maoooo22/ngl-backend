@@ -1,35 +1,36 @@
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
-const fetch = require("node-fetch");
-
+const express = require('express');
 const app = express();
-const PORT = process.env.PORT || 3000;
+const serverless = require('serverless-http');
 
-app.use(cors());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.post("/ngl", async (req, res) => {
+app.post('/send', async (req, res) => {
   const { username, question } = req.body;
 
+  if (!username || !question) {
+    return res.status(400).json({ success: false, message: 'Missing username or question' });
+  }
+
   try {
-    const result = await fetch("https://ngl.link/api/submit", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
+    const response = await fetch('https://ngl.link/api/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
       body: new URLSearchParams({
         username,
         question,
-        deviceId: "website"
+        deviceId: 'website'
       })
     });
 
-    const data = await result.json();
-    res.json(data);
-  } catch (error) {
-    res.status(500).json({ success: false, error: error.message });
+    const data = await response.json();
+    if (data.success) {
+      res.json({ success: true });
+    } else {
+      res.status(500).json({ success: false, message: 'NGL error' });
+    }
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Fetch failed' });
   }
 });
 
-app.listen(PORT, () => console.log("Server ready on port", PORT));
+module.exports = serverless(app);
