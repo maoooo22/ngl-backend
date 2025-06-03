@@ -3,26 +3,26 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Spam NGL - maoo_2553</title>
+  <title>Spam NGL - maoo_2553 (Cleaned)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
   <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen">
+<body class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen">
   <header class="bg-gray-800 shadow-md sticky top-0">
     <div class="container mx-auto p-4 flex justify-between items-center">
       <h1 class="text-xl font-bold text-purple-400">Spam NGL maoo_2553</h1>
+      <span class="text-xs text-gray-400">Found bug? <a href="mailto:justmarimo@gmail.com" class="text-green-400">justmarimo@gmail.com</a></span>
     </div>
-  </header>
+  </header>  
 
   <main class="container mx-auto mt-10">
     <div class="text-center">
       <h2 class="text-3xl font-extrabold mb-4" data-aos="fade-up">Spam Pesan Anonim</h2>
       <p class="text-gray-400 mb-6" data-aos="fade-right">
         Jangan Jual Beliin Tools Tod<br/>
-        By maoo_2553 (<a href="https://t.me/maoo_2553" class="text-blue-400">@maoo_2553</a>)<br/>
-        Found bug? <span class="text-green-400">justmarimo@gmail.com</span>
+        By maoo_2553 (<a href="https://t.me/maoo_2553" class="text-blue-400">@maoo_2553</a>)
       </p>
     </div>
 
@@ -44,18 +44,17 @@
       </div>
       <button type="submit" class="w-full bg-purple-600 py-2 rounded-lg hover:bg-purple-700 transition" data-aos="flip-up">Kirim Pesan</button>
     </form>
-  </main>
+  </main>  
 
   <footer class="text-center mt-10 text-gray-500">
     <p class="text-sm">&copy; 2025 Spam NGL Powered by maoo_2553</p>
-  </footer>
+  </footer>  
 
   <script>
     AOS.init();
 
     document.getElementById("spamForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-
       const username = document.getElementById("username").value.trim();
       const message = document.getElementById("message").value.trim();
       const count = parseInt(document.getElementById("count").value);
@@ -67,7 +66,7 @@
 
       Swal.fire({
         title: 'Mengirim Pesan...',
-        html: `Mengirim ${count} pesan ke <strong>@${username}</strong><br><br><em>Pesan di-delay 1-2 detik agar terhindar dari block.</em>`,
+        html: `Mengirim ${count} pesan ke @${username}<br><small style="color:gray;">Pesan di-delay 1-2 detik agar tidak diblokir</small>`,
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,
@@ -89,8 +88,7 @@
             body: JSON.stringify({ username, message })
           });
 
-          const data = await res.json();
-          if (data.success) {
+          if (res.ok) {
             sukses++;
           } else {
             gagal++;
@@ -99,11 +97,15 @@
           gagal++;
         }
 
-        const delay = Math.random() * 1000 + 1000; // 1-2 detik
+        const delay = Math.random() * 1000 + 1000; // 1–2 detik
         await new Promise(resolve => setTimeout(resolve, delay));
       }
 
-      Swal.fire("Selesai!", `Berhasil: ${sukses}, Gagal: ${gagal}`, "success");
+      Swal.fire(
+        'Selesai!',
+        `Berhasil: ${sukses}, Gagal: ${gagal}`,
+        'success'
+      );
     });
   </script>
 </body>
