@@ -94,23 +94,3 @@
       for (let i = 0; i < count; i++) {
         await delay(1000 + Math.random() * 1000); // 1-2 detik
 
-        try {
-          const res = await fetch('/api', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username, message })
-          });
-
-          const result = await res.json();
-          if (result.success) sukses++;
-          else gagal++;
-        } catch {
-          gagal++;
-        }
-      }
-
-      Swal.fire("Selesai!", `Berhasil: ${sukses}, Gagal: ${gagal}`, "success");
-    });
-  </script>
-</body>
-</html>
