@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,59 +6,104 @@
   <title>Spam NGL - maoo_2553</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
-  <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6">
-    <h1 class="text-xl font-bold mb-4 text-purple-400 text-center">Spam NGL - maoo_2553</h1>
-    <form id="spamForm" class="space-y-4">
-      <input type="text" id="username" placeholder="NGL Username" required
-        class="w-full p-2 rounded bg-gray-700 text-white" />
-      <textarea id="message" placeholder="Pesan" required rows="3"
-        class="w-full p-2 rounded bg-gray-700 text-white"></textarea>
-      <input type="number" id="count" placeholder="Jumlah Pesan" required min="1"
-        class="w-full p-2 rounded bg-gray-700 text-white" />
-      <button type="submit"
-        class="w-full bg-purple-600 hover:bg-purple-700 transition py-2 rounded text-white">Kirim</button>
+<body class="bg-gray-900 text-white min-h-screen">
+  <header class="bg-gray-800 shadow-md sticky top-0">
+    <div class="container mx-auto p-4 flex justify-between items-center">
+      <h1 class="text-xl font-bold text-purple-400">Spam NGL maoo_2553</h1>
+    </div>
+  </header>
+
+  <main class="container mx-auto mt-10">
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold mb-4" data-aos="fade-up">Spam Pesan Anonim</h2>
+      <p class="text-gray-400 mb-6" data-aos="fade-right">
+        Jangan Jual Beliin Tools Tod<br/>
+        By maoo_2553 (<a href="https://t.me/maoo_2553" class="text-blue-400">@maoo_2553</a>)<br/>
+        Found bug? <span class="text-green-400">justmarimo@gmail.com</span>
+      </p>
+    </div>
+
+    <form id="spamForm" class="p-6 bg-gray-800 rounded-lg shadow-lg" data-aos="zoom-in">
+      <div class="mb-4">
+        <label for="username" class="block text-lg font-medium">NGL Username</label>
+        <input type="text" id="username" placeholder="Contoh: inputusername"
+               class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required />
+      </div>
+      <div class="mb-4">
+        <label for="message" class="block text-lg font-medium">Pesan Anonim</label>
+        <textarea id="message" placeholder="Tulis pesan Anda..." rows="4"
+                  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required></textarea>
+      </div>
+      <div class="mb-4">
+        <label for="count" class="block text-lg font-medium">Jumlah Pesan</label>
+        <input type="number" id="count" placeholder="Contoh: 5" min="1"
+               class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required />
+      </div>
+      <button type="submit" class="w-full bg-purple-600 py-2 rounded-lg hover:bg-purple-700 transition" data-aos="flip-up">Kirim Pesan</button>
     </form>
-    <p class="text-sm text-center mt-4 text-gray-400">Pesan di-delay 1-2 detik agar terhindar dari block<br>Found bug? justmarimo@gmail.com</p>
-  </div>
+  </main>
+
+  <footer class="text-center mt-10 text-gray-500">
+    <p class="text-sm">&copy; 2025 Spam NGL Powered by maoo_2553</p>
+  </footer>
 
   <script>
+    AOS.init();
+
     document.getElementById("spamForm").addEventListener("submit", async function(e) {
       e.preventDefault();
+
       const username = document.getElementById("username").value.trim();
       const message = document.getElementById("message").value.trim();
       const count = parseInt(document.getElementById("count").value);
 
       if (!username || !message || isNaN(count) || count <= 0) {
-        return Swal.fire("Error", "Isi semua input dengan benar", "error");
+        Swal.fire("Error", "Semua kolom harus diisi dengan benar.", "error");
+        return;
       }
 
       Swal.fire({
-        title: 'Mengirim...',
-        text: `Pesan di-delay 1-2 detik agar terhindar dari block`,
+        title: 'Mengirim Pesan...',
+        html: `Mengirim ${count} pesan ke <strong>@${username}</strong><br><br><em>Pesan di-delay 1-2 detik agar terhindar dari block.</em>`,
         allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
       });
 
-      let sukses = 0, gagal = 0;
+      let sukses = 0;
+      let gagal = 0;
+
       for (let i = 0; i < count; i++) {
         try {
-          const res = await fetch('/api', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+          const res = await fetch("/api", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
             body: JSON.stringify({ username, message })
           });
+
           const data = await res.json();
-          if (data.success) sukses++;
-          else gagal++;
-        } catch {
+          if (data.success) {
+            sukses++;
+          } else {
+            gagal++;
+          }
+        } catch (err) {
           gagal++;
         }
-        await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000));
+
+        const delay = Math.random() * 1000 + 1000; // 1-2 detik
+        await new Promise(resolve => setTimeout(resolve, delay));
       }
 
-      Swal.fire("Selesai", `Berhasil: ${sukses}, Gagal: ${gagal}`, "success");
+      Swal.fire("Selesai!", `Berhasil: ${sukses}, Gagal: ${gagal}`, "success");
     });
   </script>
 </body>
