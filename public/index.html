@@ -3,94 +3,111 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Spam NGL - maoo_2553 (Cleaned)</title>
+  <title>Spam NGL - maoo_2553</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet"/>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
 </head>
-<body class="bg-gray-900 text-white min-h-screen flex flex-col justify-between">
-  <header class="bg-gray-800 shadow-md">
-    <div class="max-w-2xl mx-auto p-4 flex justify-between items-center">
+<body class="bg-gradient-to-r from-gray-900 via-gray-800 to-gray-900 text-white min-h-screen">
+  <header class="bg-gray-800 shadow-md sticky top-0">
+    <div class="container mx-auto p-4 flex justify-between items-center">
       <h1 class="text-xl font-bold text-purple-400">Spam NGL by maoo_2553</h1>
-      <span class="text-sm text-gray-400">Found bug? justmarimo@gmail.com</span>
     </div>
-  </header>
+  </header>  
 
-  <main class="max-w-2xl mx-auto mt-10 px-4 w-full">
-    <div class="text-center mb-6">
-      <h2 class="text-3xl font-bold mb-2">Spam Pesan Anonim</h2>
-      <p class="text-gray-400">Jangan jual beliin tools ya tod 😈</p>
-      <p class="text-sm mt-2 text-blue-400">@maoo_2553</p>
+  <main class="container mx-auto mt-10">
+    <div class="text-center">
+      <h2 class="text-3xl font-extrabold mb-4" data-aos="fade-up">Spam Pesan Anonim</h2>
+      <p class="text-gray-400 mb-6" data-aos="fade-right">
+        Jangan jual beli tools ini!<br/>
+        By <a href="https://t.me/maoo_2553" class="text-blue-400">@maoo_2553</a> <br/>
+        <span class="text-sm italic text-gray-500">Found bug? justmarimo@gmail.com</span>
+      </p>
     </div>
 
-    <form id="spamForm" class="bg-gray-800 p-6 rounded-lg shadow-md space-y-4">
-      <div>
+    <form id="spamForm" class="p-6 bg-gray-800 rounded-lg shadow-lg" data-aos="zoom-in">
+      <div class="mb-4">
         <label for="username" class="block text-lg font-medium">NGL Username</label>
-        <input type="text" id="username" placeholder="contoh: ngluser123"
-          class="w-full px-4 py-2 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500" required />
+        <input type="text" id="username" placeholder="Contoh: inputusername"
+               class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required />
       </div>
-
-      <div>
+      <div class="mb-4">
         <label for="message" class="block text-lg font-medium">Pesan Anonim</label>
-        <textarea id="message" rows="4" placeholder="Tulis pesan kamu..."
-          class="w-full px-4 py-2 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500" required></textarea>
+        <textarea id="message" placeholder="Tulis pesan Anda..." rows="4"
+                  class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required></textarea>
       </div>
-
-      <div>
+      <div class="mb-4">
         <label for="count" class="block text-lg font-medium">Jumlah Pesan</label>
-        <input type="number" id="count" min="1" placeholder="misal 5"
-          class="w-full px-4 py-2 bg-gray-700 rounded-md border border-gray-600 focus:outline-none focus:ring-2 focus:ring-purple-500" required />
+        <input type="number" id="count" placeholder="Contoh: 5" min="1"
+               class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required />
       </div>
-
-      <button type="submit"
-        class="w-full bg-purple-600 py-2 rounded-md hover:bg-purple-700 transition">Kirim Pesan</button>
+      <button type="submit" class="w-full bg-purple-600 py-2 rounded-lg hover:bg-purple-700 transition" data-aos="flip-up">Kirim Pesan</button>
     </form>
-  </main>
+  </main>  
 
-  <footer class="text-center mt-10 mb-4 text-sm text-gray-500">
-    &copy; 2025 Powered by maoo_2553
-  </footer>
+  <footer class="text-center mt-10 text-gray-500">
+    <p class="text-sm">&copy; 2025 Spam NGL - Powered by maoo_2553</p>
+  </footer>  
 
   <script>
-    async function validateUsername(username) {
-      try {
-        const res = await fetch(`https://ngl.link/${username}`);
-        const html = await res.text();
-        return !html.includes("Whoops") && !html.includes("This page could not be found");
-      } catch {
-        return false;
-      }
-    }
+    AOS.init();
 
-    function delay(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
-    }
-
-    document.getElementById("spamForm").addEventListener("submit", async function (e) {
+    document.getElementById("spamForm").addEventListener("submit", async function(e) {
       e.preventDefault();
+
       const username = document.getElementById("username").value.trim();
       const message = document.getElementById("message").value.trim();
       const count = parseInt(document.getElementById("count").value);
 
       if (!username || !message || isNaN(count) || count <= 0) {
-        Swal.fire("Error", "Semua kolom wajib diisi dengan benar.", "error");
-        return;
-      }
-
-      const isValid = await validateUsername(username);
-      if (!isValid) {
-        Swal.fire("Gagal", "Username NGL tidak ditemukan.", "error");
+        Swal.fire("Error", "Semua kolom harus diisi dengan benar.", "error");
         return;
       }
 
       Swal.fire({
-        title: "Mengirim pesan...",
-        html: `Pesan di-delay 1–2 detik agar tidak diblokir.<br>Mengirim ${count} pesan ke @${username}`,
+        title: 'Mengirim Pesan...',
+        text: `Mengirim ${count} pesan ke @${username}\nPesan di-delay 1-2 detik agar tidak diblokir.`,
         allowOutsideClick: false,
-        didOpen: () => Swal.showLoading()
+        allowEscapeKey: false,
+        allowEnterKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        }
       });
 
-      let sukses = 0, gagal = 0;
+      let sukses = 0;
+      let gagal = 0;
 
       for (let i = 0; i < count; i++) {
-        await delay(1000 + Math.random() * 1000); // 1-2 detik
+        try {
+          const res = await fetch("/api", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              username,
+              message
+            })
+          });
 
+          const result = await res.json();
+          if (result.success) {
+            sukses++;
+          } else {
+            gagal++;
+          }
+
+          await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 1000));
+
+        } catch (err) {
+          gagal++;
+        }
+      }
+
+      Swal.fire("Selesai", `Berhasil: ${sukses}, Gagal: ${gagal}`, "success");
+    });
+  </script>
+</body>
+          </html>
