@@ -1,0 +1,66 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Spam NGL - maoo_2553</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body class="bg-gray-900 text-white min-h-screen flex items-center justify-center p-4">
+  <div class="w-full max-w-md bg-gray-800 rounded-lg shadow-lg p-6">
+    <h1 class="text-xl font-bold mb-4 text-purple-400 text-center">Spam NGL - maoo_2553</h1>
+    <form id="spamForm" class="space-y-4">
+      <input type="text" id="username" placeholder="NGL Username" required
+        class="w-full p-2 rounded bg-gray-700 text-white" />
+      <textarea id="message" placeholder="Pesan" required rows="3"
+        class="w-full p-2 rounded bg-gray-700 text-white"></textarea>
+      <input type="number" id="count" placeholder="Jumlah Pesan" required min="1"
+        class="w-full p-2 rounded bg-gray-700 text-white" />
+      <button type="submit"
+        class="w-full bg-purple-600 hover:bg-purple-700 transition py-2 rounded text-white">Kirim</button>
+    </form>
+    <p class="text-sm text-center mt-4 text-gray-400">Pesan di-delay 1-2 detik agar terhindar dari block<br>Found bug? justmarimo@gmail.com</p>
+  </div>
+
+  <script>
+    document.getElementById("spamForm").addEventListener("submit", async function(e) {
+      e.preventDefault();
+      const username = document.getElementById("username").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const count = parseInt(document.getElementById("count").value);
+
+      if (!username || !message || isNaN(count) || count <= 0) {
+        return Swal.fire("Error", "Isi semua input dengan benar", "error");
+      }
+
+      Swal.fire({
+        title: 'Mengirim...',
+        text: `Pesan di-delay 1-2 detik agar terhindar dari block`,
+        allowOutsideClick: false,
+        didOpen: () => Swal.showLoading()
+      });
+
+      let sukses = 0, gagal = 0;
+      for (let i = 0; i < count; i++) {
+        try {
+          const res = await fetch('/api', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, message })
+          });
+          const data = await res.json();
+          if (data.success) sukses++;
+          else gagal++;
+        } catch {
+          gagal++;
+        }
+        await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000));
+      }
+
+      Swal.fire("Selesai", `Berhasil: ${sukses}, Gagal: ${gagal}`, "success");
+    });
+  </script>
+</body>
+</html>
