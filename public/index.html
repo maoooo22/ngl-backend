@@ -63,22 +63,25 @@
         return;
       }
 
-      // Estimasi waktu: 1.5 detik per pesan
-      const estimatedSec = Math.round(count * 1.5);
-      const timeStr = estimatedSec >= 60
-        ? `±${Math.floor(estimatedSec / 60)} menit ${estimatedSec % 60} detik`
-        : `±${estimatedSec} detik`;
+      const estimasi = Math.ceil(count * 1.5);
+      let sisa = estimasi;
 
       Swal.fire({
         title: 'Mengirim Pesan...',
         html: `Mengirim ${count} pesan ke @${username}<br>
                <small style="color:gray;">Pesan di-delay 1-2 detik agar tidak diblokir</small><br>
-               <small style="color:gray;">Estimasi waktu: ${timeStr}</small>`,
+               <b>Estimasi selesai: <span id="timer">${sisa}</span> detik</b>`,
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,
         didOpen: () => {
           Swal.showLoading();
+          const interval = setInterval(() => {
+            sisa--;
+            const el = document.getElementById("timer");
+            if (el) el.innerText = sisa;
+            if (sisa <= 0) clearInterval(interval);
+          }, 1000);
         }
       });
 
