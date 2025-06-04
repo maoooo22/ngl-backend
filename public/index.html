@@ -63,12 +63,15 @@
         return;
       }
 
-      let countdown = Math.round(count * 1.5);
+      const estimateSeconds = Math.round(count * 1.5);
+      let countdown = estimateSeconds;
+
       Swal.fire({
         title: 'Mengirim Pesan...',
         html: `
           Mengirim ${count} pesan ke @${username}<br>
           <small style="color:gray;">Pesan di-delay 1-2 detik agar tidak diblokir</small><br>
+          <b>Estimasi waktu: ±${estimateSeconds} detik</b><br>
           <b>Sisa waktu: <span id="swal-timer">${countdown}</span> detik</b>
         `,
         allowOutsideClick: false,
