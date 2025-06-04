@@ -15,7 +15,7 @@
       <h1 class="text-xl font-bold text-purple-400">Spam NGL maoo_2553</h1>
       <span class="text-xs text-gray-400">Found bug? <a href="mailto:justmarimo@gmail.com" class="text-green-400">justmarimo@gmail.com</a></span>
     </div>
-  </header>  
+  </header>
 
   <main class="container mx-auto mt-10">
     <div class="text-center">
@@ -41,27 +41,57 @@
         <input type="number" id="count" placeholder="Contoh: 5" min="1"
                class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required />
       </div>
+      <div class="mb-4 text-center text-sm text-gray-400" id="estimationBox" style="display:none;">
+        Estimasi waktu: <span id="estimation"></span><br>
+        Hitung mundur: <span id="countdown"></span>
+      </div>
       <button type="submit" class="w-full bg-purple-600 py-2 rounded-lg hover:bg-purple-700 transition" data-aos="flip-up">Kirim Pesan</button>
     </form>
-  </main>  
+  </main>
 
   <footer class="text-center mt-10 text-gray-500">
     <p class="text-sm">&copy; 2025 Spam NGL Powered by maoo_2553</p>
-  </footer>  
+  </footer>
 
   <script>
     AOS.init();
 
-    document.getElementById("spamForm").addEventListener("submit", async function(e) {
+    const form = document.getElementById("spamForm");
+    const estimationBox = document.getElementById("estimationBox");
+    const estimationEl = document.getElementById("estimation");
+    const countdownEl = document.getElementById("countdown");
+
+    form.count.addEventListener("input", () => {
+      const count = parseInt(form.count.value);
+      if (!isNaN(count) && count > 0) {
+        const est = Math.round(count * 1.5); // estimasi 1.5 detik/pesan
+        estimationBox.style.display = "block";
+        estimationEl.textContent = `${est} detik`;
+        countdownEl.textContent = `${est}`;
+      } else {
+        estimationBox.style.display = "none";
+      }
+    });
+
+    form.addEventListener("submit", async function(e) {
       e.preventDefault();
-      const username = document.getElementById("username").value.trim();
-      const message = document.getElementById("message").value.trim();
-      const count = parseInt(document.getElementById("count").value);
+      const username = form.username.value.trim();
+      const message = form.message.value.trim();
+      const count = parseInt(form.count.value);
 
       if (!username || !message || isNaN(count) || count <= 0) {
         Swal.fire("Error", "Semua kolom harus diisi dengan benar.", "error");
         return;
       }
+
+      let countdown = Math.round(count * 1.5);
+      const interval = setInterval(() => {
+        if (countdown <= 0) {
+          clearInterval(interval);
+        } else {
+          countdownEl.textContent = `${--countdown}`;
+        }
+      }, 1000);
 
       Swal.fire({
         title: 'Mengirim Pesan...',
@@ -69,42 +99,33 @@
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,
-        didOpen: () => {
-          Swal.showLoading();
-        }
+        didOpen: () => Swal.showLoading()
       });
 
       let sukses = 0;
       let gagal = 0;
+      const startTime = Date.now();
 
       for (let i = 0; i < count; i++) {
         try {
           const res = await fetch("/api", {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json"
-            },
+            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, message })
           });
 
-          if (res.ok) {
-            sukses++;
-          } else {
-            gagal++;
-          }
-        } catch (err) {
+          if (res.ok) sukses++;
+          else gagal++;
+        } catch {
           gagal++;
         }
 
-        const delay = Math.random() * 1000 + 1000; // Delay 1–2 detik
+        const delay = Math.random() * 1000 + 1000;
         await new Promise(resolve => setTimeout(resolve, delay));
       }
 
-      Swal.fire(
-        'Selesai!',
-        `Berhasil: ${sukses}, Gagal: ${gagal}`,
-        'success'
-      );
+      const duration = ((Date.now() - startTime) / 1000).toFixed(1);
+      Swal.fire('Selesai!', `Berhasil: ${sukses}, Gagal: ${gagal}<br>Waktu: ${duration} detik`, 'success');
     });
   </script>
 </body>
