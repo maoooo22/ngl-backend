@@ -41,10 +41,6 @@
         <input type="number" id="count" placeholder="Contoh: 5" min="1"
                class="w-full px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500 bg-gray-700 text-white" required />
       </div>
-      <div class="mb-4 text-center text-sm text-gray-400" id="estimationBox" style="display:none;">
-        Estimasi waktu: <span id="estimation"></span><br>
-        Hitung mundur: <span id="countdown"></span>
-      </div>
       <button type="submit" class="w-full bg-purple-600 py-2 rounded-lg hover:bg-purple-700 transition" data-aos="flip-up">Kirim Pesan</button>
     </form>
   </main>
@@ -56,28 +52,11 @@
   <script>
     AOS.init();
 
-    const form = document.getElementById("spamForm");
-    const estimationBox = document.getElementById("estimationBox");
-    const estimationEl = document.getElementById("estimation");
-    const countdownEl = document.getElementById("countdown");
-
-    form.count.addEventListener("input", () => {
-      const count = parseInt(form.count.value);
-      if (!isNaN(count) && count > 0) {
-        const est = Math.round(count * 1.5); // estimasi 1.5 detik/pesan
-        estimationBox.style.display = "block";
-        estimationEl.textContent = `${est} detik`;
-        countdownEl.textContent = `${est}`;
-      } else {
-        estimationBox.style.display = "none";
-      }
-    });
-
-    form.addEventListener("submit", async function(e) {
+    document.getElementById("spamForm").addEventListener("submit", async function(e) {
       e.preventDefault();
-      const username = form.username.value.trim();
-      const message = form.message.value.trim();
-      const count = parseInt(form.count.value);
+      const username = document.getElementById("username").value.trim();
+      const message = document.getElementById("message").value.trim();
+      const count = parseInt(document.getElementById("count").value);
 
       if (!username || !message || isNaN(count) || count <= 0) {
         Swal.fire("Error", "Semua kolom harus diisi dengan benar.", "error");
@@ -85,26 +64,29 @@
       }
 
       let countdown = Math.round(count * 1.5);
-      const interval = setInterval(() => {
-        if (countdown <= 0) {
-          clearInterval(interval);
-        } else {
-          countdownEl.textContent = `${--countdown}`;
-        }
-      }, 1000);
-
       Swal.fire({
         title: 'Mengirim Pesan...',
-        html: `Mengirim ${count} pesan ke @${username}<br><small style="color:gray;">Pesan di-delay 1-2 detik agar tidak diblokir</small>`,
+        html: `
+          Mengirim ${count} pesan ke @${username}<br>
+          <small style="color:gray;">Pesan di-delay 1-2 detik agar tidak diblokir</small><br>
+          <b>Sisa waktu: <span id="swal-timer">${countdown}</span> detik</b>
+        `,
         allowOutsideClick: false,
         allowEscapeKey: false,
         allowEnterKey: false,
-        didOpen: () => Swal.showLoading()
+        didOpen: () => {
+          Swal.showLoading();
+          const interval = setInterval(() => {
+            countdown--;
+            const el = document.getElementById("swal-timer");
+            if (el) el.textContent = countdown;
+            if (countdown <= 0) clearInterval(interval);
+          }, 1000);
+        }
       });
 
       let sukses = 0;
       let gagal = 0;
-      const startTime = Date.now();
 
       for (let i = 0; i < count; i++) {
         try {
@@ -121,11 +103,14 @@
         }
 
         const delay = Math.random() * 1000 + 1000;
-        await new Promise(resolve => setTimeout(resolve, delay));
+        await new Promise(r => setTimeout(r, delay));
       }
 
-      const duration = ((Date.now() - startTime) / 1000).toFixed(1);
-      Swal.fire('Selesai!', `Berhasil: ${sukses}, Gagal: ${gagal}<br>Waktu: ${duration} detik`, 'success');
+      Swal.fire(
+        'Selesai!',
+        `Berhasil: ${sukses}, Gagal: ${gagal}`,
+        'success'
+      );
     });
   </script>
 </body>
