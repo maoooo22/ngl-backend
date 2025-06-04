@@ -1,12 +1,6 @@
 {
   "version": 2,
   "public": true,
-  "builds": [
-    {
-      "src": "index.js",
-      "use": "@vercel/node"
-    }
-  ],
   "routes": [
     {
       "src": "/api",
@@ -15,11 +9,11 @@
     },
     {
       "src": "/puisi",
-      "dest": "/public/puisi/index.html"
+      "dest": "/puisi/index.html"
     },
     {
       "src": "/",
-      "dest": "/public/index.html"
+      "dest": "/index.html"
     }
   ]
 }
