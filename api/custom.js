@@ -1,23 +1,22 @@
+// /api/custom.js
 export default async function handler(req, res) {
-  const method = req.method;
-  let username, message, jumlah;
+  const { method, query } = req;
 
-  if (method === 'GET') {
-    ({ username, message, jumlah } = req.query);
-  } else if (method === 'POST') {
-    ({ username, message, jumlah } = req.body);
-  } else {
-    return res.status(405).json({ message: 'Method Not Allowed' });
+  if (method !== 'GET') {
+    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
   }
 
-  if (!username || !message || isNaN(jumlah)) {
+  const { username, message, jumlah } = query;
+  const count = parseInt(jumlah || '1');
+  
+  if (!username || !message || isNaN(count) || count <= 0) {
     return res.status(400).json({ success: false, message: 'Invalid input' });
   }
 
-  let success = 0;
-  let failed = 0;
+  let sukses = 0;
+  let gagal = 0;
 
-  for (let i = 0; i < parseInt(jumlah); i++) {
+  for (let i = 0; i < count; i++) {
     try {
       const nglRes = await fetch('https://ngl.link/api/submit', {
         method: 'POST',
@@ -25,19 +24,27 @@ export default async function handler(req, res) {
           'Content-Type': 'application/x-www-form-urlencoded'
         },
         body: new URLSearchParams({
-          username: username,
+          username,
           question: message,
           deviceId: 'website'
         })
       });
 
       const result = await nglRes.json();
-      if (result.success) success++;
-      else failed++;
+      if (result.success) sukses++;
+      else gagal++;
     } catch {
-      failed++;
+      gagal++;
     }
+
+    await new Promise(r => setTimeout(r, Math.random() * 1000 + 1000)); // delay 1–2 detik
   }
 
-  return res.status(200).json({ success, failed });
-      }
+  return res.status(200).json({
+    success: true,
+    username,
+    total: count,
+    sukses,
+    gagal
+  });
+}
