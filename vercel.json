@@ -1,8 +1,10 @@
 {
-  "cleanUrls": true,
-  "rewrites": [
-    { "source": "/api/:match*", "destination": "/api/:match*" },
-    { "source": "/puisi", "destination": "/puisi/index.html" }
+  "version": 2,
+  "builds": [
+    { "src": "api/*.js", "use": "@vercel/node" }
   ],
-  "public": "public"
+  "routes": [
+    { "src": "/api/(.*)", "dest": "api/$1.js" },
+    { "src": "/(.*)", "dest": "/public/$1" }
+  ]
 }
