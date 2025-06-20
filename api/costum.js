@@ -1,52 +1,43 @@
 export default async function handler(req, res) {
-  if (req.method !== 'GET') {
-    return res.status(405).json({ success: false, message: 'Method Not Allowed' });
+  const method = req.method;
+  let username, message, jumlah;
+
+  if (method === 'GET') {
+    ({ username, message, jumlah } = req.query);
+  } else if (method === 'POST') {
+    ({ username, message, jumlah } = req.body);
+  } else {
+    return res.status(405).json({ message: 'Method Not Allowed' });
   }
 
-  const { username, message, jumlah } = req.query;
-
-  if (!username || !message || isNaN(parseInt(jumlah))) {
-    return res.status(400).json({ success: false, message: 'Missing or invalid parameters' });
+  if (!username || !message || isNaN(jumlah)) {
+    return res.status(400).json({ success: false, message: 'Invalid input' });
   }
 
-  let sukses = 0;
-  let gagal = 0;
+  let success = 0;
+  let failed = 0;
 
   for (let i = 0; i < parseInt(jumlah); i++) {
     try {
-      const response = await fetch('https://ngl.link/api/submit', {
+      const nglRes = await fetch('https://ngl.link/api/submit', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
         body: new URLSearchParams({
           username: username,
           question: message,
-          deviceId: 'website',
-        }),
+          deviceId: 'website'
+        })
       });
 
-      const result = await response.json();
-
-      if (result?.success) {
-        sukses++;
-      } else {
-        gagal++;
-      }
-
-      // Delay 1-2 detik agar tidak kena blokir
-      const delay = Math.random() * 1000 + 1000;
-      await new Promise(resolve => setTimeout(resolve, delay));
-    } catch (err) {
-      gagal++;
+      const result = await nglRes.json();
+      if (result.success) success++;
+      else failed++;
+    } catch {
+      failed++;
     }
   }
 
-  return res.status(200).json({
-    success: true,
-    status: 'ok',
-    message: 'Selesai dikirim',
-    data: {
-      berhasil: sukses,
-      gagal: gagal,
-    }
-  });
-}
+  return res.status(200).json({ success, failed });
+      }
