@@ -91,23 +91,18 @@
       let sukses = 0;
       let gagal = 0;
 
-      for (let i = 0; i < count; i++) {
-        try {
-          const res = await fetch(`/api/custom?username=${encodeURIComponent(username)}&message=${encodeURIComponent(message)}&jumlah=1`);
-          const data = await res.json();
+      try {
+        const res = await fetch(`/api/custom?username=${encodeURIComponent(username)}&message=${encodeURIComponent(message)}&jumlah=${count}`);
+        const data = await res.json();
 
-          if (data.success || data.sukses > 0) {
-            sukses += data.sukses || 1;
-            gagal += data.gagal || 0;
-          } else {
-            gagal++;
-          }
-        } catch {
-          gagal++;
+        if (data.success) {
+          sukses = data.berhasil;
+          gagal = data.gagal;
+        } else {
+          gagal = count;
         }
-
-        const delay = Math.random() * 1000 + 1000;
-        await new Promise(r => setTimeout(r, delay));
+      } catch {
+        gagal = count;
       }
 
       Swal.fire(
