@@ -49,72 +49,73 @@
     <p class="text-sm">&copy; 2025 Spam NGL Powered by maoo_2553</p>
   </footer>
 
-  <script>
-    AOS.init();
+<script>
+  AOS.init();
 
-    document.getElementById("spamForm").addEventListener("submit", async function(e) {
-      e.preventDefault();
-      const username = document.getElementById("username").value.trim();
-      const message = document.getElementById("message").value.trim();
-      const count = parseInt(document.getElementById("count").value);
+  document.getElementById("spamForm").addEventListener("submit", async function(e) {
+    e.preventDefault();
+    const username = document.getElementById("username").value.trim();
+    const message = document.getElementById("message").value.trim();
+    const count = parseInt(document.getElementById("count").value);
 
-      if (!username || !message || isNaN(count) || count <= 0) {
-        Swal.fire("Error", "Semua kolom harus diisi dengan benar.", "error");
-        return;
+    if (!username || !message || isNaN(count) || count <= 0) {
+      Swal.fire("Error", "Semua kolom harus diisi dengan benar.", "error");
+      return;
+    }
+
+    const estimateSeconds = Math.round(count * 1.5);
+    let countdown = estimateSeconds;
+
+    Swal.fire({
+      title: 'Mengirim Pesan...',
+      html: `
+        Mengirim ${count} pesan ke @${username}<br>
+        <small style="color:gray;">Pesan di-delay 1-2 detik agar tidak diblokir</small><br>
+        <b>Estimasi waktu: ±${estimateSeconds} detik</b><br>
+        <b>Sisa waktu: <span id="swal-timer">${countdown}</span> detik</b>
+      `,
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      allowEnterKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+        const interval = setInterval(() => {
+          countdown--;
+          const el = document.getElementById("swal-timer");
+          if (el) el.textContent = countdown;
+          if (countdown <= 0) clearInterval(interval);
+        }, 1000);
       }
+    });
 
-      const estimateSeconds = Math.round(count * 1.5);
-      let countdown = estimateSeconds;
+    let sukses = 0;
+    let gagal = 0;
 
-      Swal.fire({
-        title: 'Mengirim Pesan...',
-        html: `
-          Mengirim ${count} pesan ke @${username}<br>
-          <small style="color:gray;">Pesan di-delay 1-2 detik agar tidak diblokir</small><br>
-          <b>Estimasi waktu: ±${estimateSeconds} detik</b><br>
-          <b>Sisa waktu: <span id="swal-timer">${countdown}</span> detik</b>
-        `,
-        allowOutsideClick: false,
-        allowEscapeKey: false,
-        allowEnterKey: false,
-        didOpen: () => {
-          Swal.showLoading();
-          const interval = setInterval(() => {
-            countdown--;
-            const el = document.getElementById("swal-timer");
-            if (el) el.textContent = countdown;
-            if (countdown <= 0) clearInterval(interval);
-          }, 1000);
-        }
-      });
+    for (let i = 0; i < count; i++) {
+      try {
+        const res = await fetch(`/api/custom?username=${encodeURIComponent(username)}&message=${encodeURIComponent(message)}&jumlah=1`);
+        const data = await res.json();
 
-      let sukses = 0;
-      let gagal = 0;
-
-      for (let i = 0; i < count; i++) {
-        try {
-          const res = await fetch("/api", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ username, message })
-          });
-
-          if (res.ok) sukses++;
-          else gagal++;
-        } catch {
+        if (data.success) {
+          sukses += data.sukses || 1;
+          gagal += data.gagal || 0;
+        } else {
           gagal++;
         }
-
-        const delay = Math.random() * 1000 + 1000;
-        await new Promise(r => setTimeout(r, delay));
+      } catch {
+        gagal++;
       }
 
-      Swal.fire(
-        'Selesai!',
-        `Berhasil: ${sukses}, Gagal: ${gagal}`,
-        'success'
-      );
-    });
-  </script>
+      const delay = Math.random() * 1000 + 1000;
+      await new Promise(r => setTimeout(r, delay));
+    }
+
+    Swal.fire(
+      'Selesai!',
+      `Berhasil: ${sukses}, Gagal: ${gagal}`,
+      'success'
+    );
+  });
+</script>
 </body>
-</html>
+ </html>
