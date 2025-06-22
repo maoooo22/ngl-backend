@@ -5,7 +5,7 @@ export default async function handler(req, res) {
 
   const { username, message, jumlah } = req.query;
 
-  if (!username || !message || isNaN(jumlah)) {
+  if (!username || !message || isNaN(parseInt(jumlah))) {
     return res.status(400).json({ success: false, message: 'Invalid input' });
   }
 
@@ -16,11 +16,9 @@ export default async function handler(req, res) {
     try {
       const nglRes = await fetch('https://ngl.link/api/submit', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams({
-          username: username,
+          username,
           question: message,
           deviceId: 'website'
         })
@@ -36,13 +34,12 @@ export default async function handler(req, res) {
       gagal++;
     }
 
-    const delay = Math.random() * 1000 + 1000; // 1-2 detik delay
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise(r => setTimeout(r, 1000 + Math.random() * 1000)); // 1–2 detik delay
   }
 
   return res.status(200).json({
     success: true,
-    sukses,
-    gagal
+    berhasil: sukses,
+    gagal: gagal
   });
 }
