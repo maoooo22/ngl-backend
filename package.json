@@ -1,5 +1,16 @@
 {
   "name": "ngl-backend",
   "version": "1.0.0",
-  "type": "module"
+  "description": "A simple backend for a web app, deployed on Vercel.",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "keywords": [
+    "vercel",
+    "serverless"
+  ],
+  "author": "berberpatapim",
+  "license": "ISC"
 }
